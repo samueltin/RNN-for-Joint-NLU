@@ -44,6 +44,7 @@ def train(is_debug=False):
     # print("index2slot: ", index2slot)
     index_train = to_index(train_data_ed, word2index, slot2index, intent2index)
     index_test = to_index(test_data_ed, word2index, slot2index, intent2index)
+    saver = tf.train.Saver()
     for epoch in range(epoch_num):
         mean_loss = 0.0
         train_loss = 0.0
@@ -75,6 +76,9 @@ def train(is_debug=False):
             #     mean_loss = 0
         train_loss /= (i + 1)
         print("[Epoch {}] Average train loss: {}".format(epoch, train_loss))
+        save_path = saver.save(sess, "./saved_model/model.ckpt")
+        print("Model saved in path: %s" % save_path)
+
 
         # 每训一个epoch，测试一次
         pred_slots = []
@@ -114,6 +118,8 @@ def train(is_debug=False):
         print("Intent accuracy for epoch {}: {}".format(epoch, np.average(intent_accs)))
         print("Slot accuracy for epoch {}: {}".format(epoch, np.average(slot_accs)))
         print("Slot F1 score for epoch {}: {}".format(epoch, f1_for_sequence_batch(true_slots_a, pred_slots_a)))
+        save_path = saver.save(sess, "./saved_model/model.ckpt")
+        print("Model saved in path: %s" % save_path)
 
 
 def test_data():
@@ -139,5 +145,5 @@ def test_data():
 
 if __name__ == '__main__':
     # train(is_debug=True)
-    # test_data()
     train()
+    test_data()
